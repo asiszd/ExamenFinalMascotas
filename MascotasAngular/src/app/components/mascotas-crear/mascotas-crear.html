@@ -1,0 +1,201 @@
+<div class="main-div">
+  <mat-card class="card-style">
+    <mat-card-header>
+      <mat-card-title class="mat">
+        <h2 style="text-align: center">Alta de mascota</h2>
+        <button
+          style="margin-bottom: 5%"
+          mat-button
+          color=""
+          (click)="regresar()"
+        >
+          <mat-icon> keyboard_backspace </mat-icon> Regresar a lista
+        </button>
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <!-- INICIA FORMULARIO DE CREACIÓN DE USUARIO -->
+      <form
+        ngNativeValidate
+        (ngSubmit)="guardar()"
+        #form="ngForm"
+        class="example-form"
+      >
+        <mat-card class="contenedor-interno">
+          <mat-card-content>
+            <div class="container">
+              <mat-form-field class="example-full-width">
+                <mat-label for="nombre">NOMBRE DE LA MASCOTA</mat-label>
+                <input
+                  matInput
+                  type="text"
+                  class="form-control"
+                  name="nombre"
+                  placeholder="Ingresa el nombre de la mascota"
+                  [(ngModel)]="mascota.nombre"
+                  required=""
+                  #nombre="ngModel"
+                />
+                <div *ngIf="nombre.invalid && nombre.touched">
+                  <small style="color: red"
+                    >El campo NOMBRE es obligatorio.</small
+                  >
+                </div>
+              </mat-form-field>
+
+              <mat-form-field class="example-full-width">
+                <mat-label for="raza">RAZA</mat-label>
+                <input
+                  matInput
+                  type="text"
+                  name="raza"
+                  class="form-control"
+                  placeholder="Ingresa la Raza de la mascota"
+                  [(ngModel)]="mascota.raza"
+                  required=""
+                  #raza="ngModel"
+                />
+                <div *ngIf="raza.invalid && raza.touched">
+                  <small style="color: red"
+                    >El campo RAZA es obligatorio.</small
+                  >
+                </div>
+              </mat-form-field>
+
+              <mat-form-field class="example-full-width">
+                <mat-label for="edad">EDAD</mat-label>
+                <input
+                  matInput
+                  type="number"
+                  step="any"
+                  name="edad"
+                  class="form-control"
+                  placeholder="Ingresa la edad de la mascota"
+                  (keydown)="validaNumeros($event)"
+                  min="1"
+                  max="25"
+                  [(ngModel)]="mascota.edad"
+                  required=""
+                  #edad="ngModel"
+                />
+                <div *ngIf="edad.invalid && edad.touched">
+                  <small style="color: red"
+                    >El campo EDAD es obligatorio y debe ser un valor entre 1 y
+                    25 años.</small
+                  >
+                </div>
+              </mat-form-field>
+
+              <mat-form-field class="example-full-width">
+                <mat-label for="razonCita">RAZON DE LA CITA</mat-label>
+                <input
+                  matInput
+                  type="text"
+                  name="razonCita"
+                  class="form-control"
+                  placeholder="Ingresa la razón de la cita"
+                  [(ngModel)]="mascota.razonCita"
+                  required=""
+                  #razonCita="ngModel"
+                />
+                <div *ngIf="razonCita.invalid && razonCita.touched">
+                  <small style="color: red"
+                    >El campo RAZON DE LA CITA es obligatorio.</small
+                  >
+                </div>
+              </mat-form-field>
+
+              <!-- SELECT DE CLIENTE ID -->
+              <mat-form-field class="example-full-width">
+                <mat-label for="clienteId">CLIENTE</mat-label>
+                <select
+                  matNativeControl
+                  required
+                  name="clienteId"
+                  class="form-control"
+                  [(ngModel)]="mascota.clienteId"
+                  required=""
+                  #clienteId="ngModel"
+                >
+                  @for (cliente of clientes; track cliente.idCliente) {
+
+                  <option [ngValue]="cliente.idCliente">
+                    {{cliente.nombre}}
+                  </option>
+                  }
+                </select>
+                <div *ngIf="clienteId.invalid && clienteId.touched">
+                  <small style="color: red">El campo ROL es obligatorio.</small>
+                </div>
+              </mat-form-field>
+
+              <!-- SELECT DE VETERINARIA -->
+              <mat-form-field class="example-full-width">
+                <mat-label for="veterinariaId">VETERINARIA</mat-label>
+                <select
+                  matNativeControl
+                  required
+                  name="veterinariaId"
+                  class="form-control"
+                  [(ngModel)]="mascota.veterinariaId"
+                  #veterinariaId="ngModel"
+                  (change)="onVeterinariaChange(mascota.veterinariaId.valueOf())"
+                >
+                  <option value="" disabled selected>
+                    Selecciona una veterinaria
+                  </option>
+                  <option
+                    *ngFor="let vet of veterinarias"
+                    [value]="vet.idVeterinaria"
+                  >
+                    {{ vet.nombre }}
+                  </option>
+                </select>
+                <div *ngIf="veterinariaId.invalid && veterinariaId.touched">
+                  <small style="color: red"
+                    >El campo VETERINARIA es obligatorio.</small
+                  >
+                </div>
+              </mat-form-field>
+
+              <!-- SELECT DE RESPONSABLE (FILTRADO) -->
+              <mat-form-field class="example-full-width">
+                <mat-label for="responsableId">RESPONSABLE</mat-label>
+                <select
+                  matNativeControl
+                  required
+                  name="responsableId"
+                  class="form-control"
+                  [(ngModel)]="mascota.responsableId"
+                  [disabled]="!filtroResp.length"
+                  #responsableId="ngModel"
+                >
+                  <option value="" disabled selected>
+                    Selecciona un responsable
+                  </option>
+                  <option
+                    *ngFor="let r of filtroResp"
+                    [value]="r.idResponsable"
+                  >
+                    {{ r.nombre }}
+                  </option>
+                </select>
+                <div *ngIf="responsableId.invalid && responsableId.touched">
+                  <small style="color: red"
+                    >El campo RESPONSABLE es obligatorio.</small
+                  >
+                </div>
+              </mat-form-field>
+            </div>
+          </mat-card-content>
+          <mat-card-actions style="display: flex; justify-content: center">
+            <button matFab extended color="warn">
+              <mat-icon>save</mat-icon> GUARDAR
+            </button>
+          </mat-card-actions>
+        </mat-card>
+      </form>
+      <!-- FINALIZA FORMULARIO DE CREACIÓN DE USUARIO -->
+    </mat-card-content>
+  </mat-card>
+</div>
